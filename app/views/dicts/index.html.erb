@@ -1,0 +1,21 @@
+<h1>Dicts controller, index action</h1>
+<a href="<%=url(:new_dict) %>">Create new dictionary</a>
+<table border="1px" cellpadding="2" cellspacing="2" width="70%">
+<tr>
+  <td> Name </td>
+  <td> Description </td>
+  <td></td>
+  <td></td>
+  <td></td>
+</tr>
+<% for dict in @dicts %>
+<tr>
+<td><%=dict.name%></td>
+<td><%=dict.description%></td> 
+<td><a href="<%=url(:dict, dict) %>">Show </a></td>
+<td><a href="<%=url(:edit_dict, dict) %>">Edit </a></td>
+<td><a href="<%=url(:delete_dict, dict)%>">Delete</a></td>
+</tr>
+<% end %>
+</table>
+

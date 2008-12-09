@@ -1,4 +1,16 @@
 <h1>Words controller, new action</h1>
-
-<p>Edit this file in <tt>app/views/words/new.html.erb</tt></p>
-<p>For more information and examples of CRUD views read <a href="http://wiki.merbivore.com/howto/crud_view_example_with_merb_using_erb"> this wiki page</a>
+<%= form_for(@word, :action => resource(:words) ) do %>
+ 
+  <p>
+    <%= text_field :name, :label => "Word" %>
+  </p>
+ 
+  <p>
+    <%= text_field :definition, :label => "Definition"  %>
+  </p>
+  <p>
+    <%= submit "Create" %>
+  </p>
+<% end =%>
+ 
+<%= link_to 'Back', resource(:words) %>

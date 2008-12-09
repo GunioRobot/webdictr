@@ -1,8 +1,8 @@
-<h1>Words controller, index action</h1>
+<h1>Words controller, search action</h1>
 <table border="1px" cellpadding="2" cellspacing="2" width="70%">
 <tr>
   <td> Keyword </td>
-  <td> Definition </td>
+  <td> Definition</td>
   <td></td>
   <td></td>
   <td></td>
@@ -10,7 +10,7 @@
 <% for word in @words %>
 <tr>
 <td><%=word.keyword%></td>
-<td><%=word.definition%></td> 
+<td><%=word.definition%></td>
 <td><a href="<%=url(:word, word) %>">Show </a></td>
 <td><a href="<%=url(:edit_word, word) %>">Edit </a></td>
 <td><a href="<%=url(:delete_word, word)%>">Delete</a></td>
