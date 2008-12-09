@@ -3,6 +3,7 @@ require 'rake/rdoctask'
 
 require 'merb-core'
 require 'merb-core/tasks/merb'
+require 'thinking_sphinx/tasks/merb'
 
 include FileUtils
 
@@ -33,3 +34,4 @@ task :default => 'spec'
 # ADD YOUR CUSTOM TASKS IN /lib/tasks
 # NAME YOUR RAKE FILES file_name.rake
 ##############################################################################
+

@@ -1,10 +1,12 @@
 class Word
   include DataMapper::Resource
   
+  belongs_to :dict  
+  
   property :id, Serial
 
-  property :name, String
-  property :phonetic, String
-  property :meaning, Text
-
+  property :dict_id, Integer
+  property :keyword, String
+  property :definition, Text
+ 
 end

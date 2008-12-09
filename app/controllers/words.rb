@@ -1,5 +1,5 @@
 class Words < Application
-  # provides :xml, :yaml, :js
+  provides :xml, :yaml, :js
 
   def index
     @words = Word.all
@@ -7,7 +7,8 @@ class Words < Application
   end
 
   def show(id)
-    @word = Word.get(id)
+    #@word = Word.get(id)
+    @word = Word.first(:keyword => id)
     raise NotFound unless @word
     display @word
   end
@@ -53,6 +54,12 @@ class Words < Application
     else
       raise InternalServerError
     end
+  end
+
+  def search(word)
+    word = params[:keyword].strip
+    @words = Word.all(:keyword => word)
+    display @words 
   end
 
 end # Words
