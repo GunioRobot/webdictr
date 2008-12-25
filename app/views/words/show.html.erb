@@ -1,3 +1,18 @@
-<h1>Words controller, show action</h1>
-<p>Keyword: <%= @word.keyword %></p>
-<p>Definition: <%= @word.definition %></p>
+<p>
+  <b>Dictionary:</b>
+  <%=h @word.dict.description %>
+</p>
+
+<p>
+  <b>Keyword:</b>
+  <%=h @word.keyword %>
+</p>
+
+<p>
+  <b>Definition:</b>
+  <%=format_definition @word.definition %>
+</p>
+
+
+<%= link_to 'Edit', edit_word_path(@word) %> |
+<%= link_to 'Back', words_path %>

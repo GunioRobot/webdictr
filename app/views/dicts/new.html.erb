@@ -1,17 +1,19 @@
-<h1>Add a new dictionary</h1>
-<%= form_for(@dict, :action => resource(:dicts) ) do %>
- 
+<h1>New dict</h1>
+
+<% form_for(@dict) do |f| %>
+  <%= f.error_messages %>
+
   <p>
-    <%= text_field :name, :label => "Name" %>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
   </p>
- 
   <p>
-    <%= text_field :description, :label => "Description"  %>
+    <%= f.label :description %><br />
+    <%= f.text_field :description %>
   </p>
- 
   <p>
-    <%= submit "Create" %>
+    <%= f.submit "Create" %>
   </p>
-<% end =%>
- 
-<%= link_to 'Back', resource(:dicts) %>
+<% end %>
+
+<%= link_to 'Back', dicts_path %>

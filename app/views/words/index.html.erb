@@ -1,19 +1,20 @@
-<h1>Words controller, index action</h1>
-<table border="1px" cellpadding="2" cellspacing="2" width="70%">
-<tr>
-  <td> Keyword </td>
-  <td> Definition </td>
-  <td></td>
-  <td></td>
-  <td></td>
-</tr>
-<% for word in @words %>
-<tr>
-<td><%=word.keyword%></td>
-<td><%=word.definition%></td> 
-<td><a href="<%=url(:word, word) %>">Show </a></td>
-<td><a href="<%=url(:edit_word, word) %>">Edit </a></td>
-<td><a href="<%=url(:delete_word, word)%>">Delete</a></td>
-</tr>
+<h1>Webdictr</h1>
+
+<% form_tag words_path, :method => :get do %>
+  <p>
+    <%= text_field_tag :q, params[:q] %>
+    <%= submit_tag "Search", :name => nil %>
+  </p>
 <% end %>
-</table>
+
+<div id="words">
+<% if @words %>
+<% for word in @words %>
+  <h2>
+    <%= link_to h(word.keyword), word %> - <%= word.dict.description %>
+  </h2>
+  <p><%= format_definition word.definition %></p>
+<% end %>
+<% end %>
+</div>
+<%= link_to 'New word', new_word_path %>

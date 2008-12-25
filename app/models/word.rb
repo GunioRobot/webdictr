@@ -1,12 +1,13 @@
-class Word
-  include DataMapper::Resource
+class Word < ActiveRecord::Base
+  acts_as_versioned
+  belongs_to :dict
   
-  belongs_to :dict  
-  
-  property :id, Serial
+  define_index do
 
-  property :dict_id, Integer
-  property :keyword, String
-  property :definition, Text
- 
+  end
+  define_index do
+    indexes keyword, :sortable => true  
+    indexes definition
+  end
+
 end

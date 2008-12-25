@@ -1,3 +1,13 @@
-<h1>Dicts controller, show action</h1>
-<p>Name: <%= @dict.name %></p>
-<p>Description: <%= @dict.description %></p>
+<p>
+  <b>Name:</b>
+  <%=h @dict.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%=h @dict.description %>
+</p>
+
+
+<%= link_to 'Edit', edit_dict_path(@dict) %> |
+<%= link_to 'Back', dicts_path %>
