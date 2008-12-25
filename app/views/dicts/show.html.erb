@@ -8,6 +8,7 @@
   <%=h @dict.description %>
 </p>
 
-
+<% if admin? %>
 <%= link_to 'Edit', edit_dict_path(@dict) %> |
+<%- end %>
 <%= link_to 'Back', dicts_path %>

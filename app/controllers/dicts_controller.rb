@@ -1,4 +1,5 @@
 class DictsController < ApplicationController
+  before_filter :authorize, :except => [:index, :show]
   # GET /dicts
   # GET /dicts.xml
   def index
