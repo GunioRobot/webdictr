@@ -1,22 +1,15 @@
----
-# This is a sample database file for the DataMapper ORM
-# These are the settings for repository :default
+development: &defaults
+  adapter: mysql
+  username: webdictr
+  password: webdictr
+  host: localhost
+  encoding: utf8
+  database: webdictr_dev
 
-:development: &defaults
-  :adapter: mysql
-  :username: webdictr
-  :password: webdictr
-  :host: localhost
-  :encoding: utf8
-  :database: webdictr_dev
-
-:test:
+test:
   <<:       *defaults
   database: webdictr_test
  
-:production:
+production:
   <<:       *defaults
   database: webdictr_prod
-
-:rake:
-  <<: *defaults

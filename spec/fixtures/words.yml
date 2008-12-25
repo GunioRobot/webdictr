@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  dict_id: 1
+  keyword: MyString
+  definition: MyText
+
+two:
+  dict_id: 1
+  keyword: MyString
+  definition: MyText
