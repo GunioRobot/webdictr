@@ -13,6 +13,8 @@
   <%=format_definition @word.definition %>
 </p>
 
-
+<% if admin? %>
 <%= link_to 'Edit', edit_word_path(@word) %> |
+<%- end %>
 <%= link_to 'Back', words_path %>
+

@@ -1,4 +1,5 @@
 class WordsController < ApplicationController
+  before_filter :authorize, :except => [:index, :show]
   # GET /words
   # GET /words.xml
   def index
@@ -16,11 +17,19 @@ class WordsController < ApplicationController
   # GET /words/1
   # GET /words/1.xml
   def show
-    @word = Word.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @word }
+    argument = params[:id].to_i
+    if argument == 0 # find by keyword
+      @word = Word.find_by_keyword(params[:id])
+    else # find by keyword id
+      @word = Word.find(argument)
+    end
+    if @word
+      respond_to do |format|
+        format.html # show.html.erb
+        format.xml  { render :xml => @word }
+      end
+    else
+      redirect_to :words
     end
   end
 

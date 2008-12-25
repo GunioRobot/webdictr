@@ -1,4 +1,3 @@
-<h1>Webdictr</h1>
 
 <% form_tag words_path, :method => :get do %>
   <p>
@@ -17,4 +16,6 @@
 <% end %>
 <% end %>
 </div>
+<% if admin? %>
 <%= link_to 'New word', new_word_path %>
+<%- end %>

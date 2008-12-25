@@ -1,9 +1,12 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :words
-
   map.resources :dicts
+  
+  
+  map.login 'login', :controller => 'sessions', :action => 'new'
+  map.logout 'logout', :controller => 'sessions', :action => 'destroy'
+  map.resources :sessions
   map.root :controller => "words"
-
   # The priority is based upon order of creation: first created -> highest priority.
 
   # Sample of regular route:

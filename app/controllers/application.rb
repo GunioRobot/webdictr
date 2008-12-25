@@ -3,7 +3,7 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-
+  helper_method :admin?
   # See ActionController::RequestForgeryProtection for details
   # Uncomment the :secret if you're not using the cookie session store
   protect_from_forgery # :secret => '07637ccd15a9eddd18e7f689455d991c'
@@ -12,4 +12,19 @@ class ApplicationController < ActionController::Base
   # Uncomment this to filter the contents of submitted sensitive data parameters
   # from your application log (in this case, all fields with names like "password"). 
   # filter_parameter_logging :password
+  
+  
+
+  protected
+  def authorize
+    unless admin?
+      flash[:error] = "Not authorized to access this page."
+      redirect_to root_path
+      false
+    end    
+  end
+
+  def admin?
+    session[:admin]
+  end
 end
