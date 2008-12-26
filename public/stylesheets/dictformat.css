@@ -1,0 +1,17 @@
+li.wordtype {
+  color: #0000ff;
+  list-style: url(/images/wordtype.png)
+}
+
+li.meaning {
+  list-style: url(/images/meaning.png)
+}
+
+li.example {
+  color: #aa1111;
+  list-style: url(/images/example.png)
+}
+li.example-meaning {
+  color: #999999;
+  list-style: none
+}

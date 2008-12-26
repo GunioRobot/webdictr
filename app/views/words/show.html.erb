@@ -4,14 +4,10 @@
 </p>
 
 <p>
-  <b>Keyword:</b>
-  <%=h @word.keyword %>
+  <h2><%=h @word.keyword %></h2>
 </p>
 
-<p>
-  <b>Definition:</b>
   <%=format_definition @word.definition %>
-</p>
 
 <% if admin? %>
 <%= link_to 'Edit', edit_word_path(@word) %> |
