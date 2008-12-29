@@ -1,4 +1,4 @@
-li.wordtype {
+li.wordtype, li.antonym{
   color: #0000ff;
   list-style: url(/images/wordtype.png)
 }
