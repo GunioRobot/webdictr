@@ -4,8 +4,12 @@ class WordsController < ApplicationController
   # GET /words.xml
   def index
     @words = nil
+    query = params[:q].strip.downcase[0..50]
     if params[:q]
-      @words = Word.search params[:q], :field_weights => {:keyword => 20, :definition => 1}
+      @words = Word.search query, :field_weights => {:keyword => 20, :definition => 1}
+      unless @words.empty?
+        @words = @words.slice(0,1) if  @words[0].keyword == query
+      end
     end
 
     respond_to do |format|
