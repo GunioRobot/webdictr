@@ -6,7 +6,7 @@ module WordsHelper
       result << line.sub(/^\-(.+)/,'<li class="meaning">\1</li>') if line.match /^\-.*/
       result << line.sub(/^\#(.+)/,'<li class="antonym">\1</li>') if line.match /^\#.*/
       result << line.sub(/^\=(.+)\+(.*)/,'<li class="example">\1</li> <li class="example-meaning">\2</li>') if line.match /^\=.*\+.*/
-      result << line.sub(/^\=([^\+]+)/,'<li class="example">\1</li>') if line.match /^\=\[^\+]+/
+      result << line.sub(/^\=([^\+]+)/,'<li class="example">\1</li>') if line.match /^\=[^\+]+/
     end
     result << "</ul>"
   end

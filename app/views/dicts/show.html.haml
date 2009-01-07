@@ -1,0 +1,11 @@
+%p
+  %strong
+    Name:
+  = @dict.name
+%p
+  %strong
+    Description:
+  = @dict.description
+- if admin?
+  = link_to 'Edit', edit_dict_path(@dict)
+= link_to 'Back', dicts_path

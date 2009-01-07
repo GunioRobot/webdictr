@@ -1,0 +1,16 @@
+%h1 Listing dicts
+
+%table
+  %tr
+    %th Name
+    %th Description
+  - for dict in @dicts
+    %tr
+      %td= h dict.name
+      %td= h dict.description
+      %td= link_to "Show", dict
+      - if admin?
+        %td= link_to "Edit", edit_dict_path(dict)
+        %td= link_to "Destroy", dict, :confirm => "Are you sure?", :method => :delete
+-if admin?
+  = link_to "New dict", new_dict_path
