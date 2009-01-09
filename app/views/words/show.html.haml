@@ -1,10 +1,10 @@
 %p
   %strong Dictionary:
-    = h @word.dict.description
+  = h @word.dict.description
 %p
   %h2= h @word.keyword
 = format_definition @word.definition
 - if admin?
-  = link_to "Edit", edit_word_path @word 
+  = link_to "Edit", edit_word_path(@word)
 = link_to "Back", words_path
 
