@@ -1,0 +1,17 @@
+%h1 Editing word
+- form_for(@word) do |f|
+  = f.error_messages
+  %p
+    = f.label :dict_id, "Dictionary"
+    = f.select(:dict_id, Dict.find(:all).collect {|d| [ d.description, d.id ] })
+  %p 
+    = f.label :keyword
+    = f.text_field :keyword
+  %p
+    = f.label :definition
+    = f.text_area :definition
+  %p= f.submit "Update"
+
+= link_to "Show", @word
+= link_to "Back", words_path
+

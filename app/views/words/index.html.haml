@@ -1,0 +1,13 @@
+- form_tag words_path, :method => :get do
+  = text_field_tag :q, params[:q]
+  = submit_tag "Search"
+#words
+  - if @words
+    - for word in @words
+      %h2
+        = link_to(h(word.keyword), word)
+        = word.dict.description
+      %p= format_definition word.definition
+- if admin?
+  = link_to "New word", new_word_path
+
