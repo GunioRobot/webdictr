@@ -7,11 +7,11 @@ module ThinkingSphinx
   # another 'internal' Thinking Sphinx class - if you're using it directly,
   # you either know what you're doing, or messing with things beyond your ken.
   # Enjoy.
-  # 
+  #
   class Index
     attr_accessor :model, :fields, :attributes, :conditions, :groupings,
       :delta, :options
-    
+
     # Create a new index instance by passing in the model it is tied to, and
     # a block to build it with (optional but recommended). For documentation
     # on the syntax for inside the block, the Builder class is what you want.
@@ -20,9 +20,9 @@ module ThinkingSphinx
     #
     #   Index.new(User) do
     #     indexes login, email
-    #     
+    #
     #     has created_at
-    #     
+    #
     #     set_property :delta => true
     #   end
     #
@@ -35,32 +35,32 @@ module ThinkingSphinx
       @groupings    = []
       @options      = {}
       @delta        = false
-      
+
       initialize_from_builder(&block) if block_given?
     end
-    
+
     def name
       self.class.name(@model)
     end
-    
+
     def self.name(model)
       model.name.underscore.tr(':/\\', '_')
     end
-    
+
     def empty?(part = :core)
       config = ThinkingSphinx::Configuration.instance
       File.size?("#{config.searchd_file_path}/#{self.name}_#{part}.spa").nil?
     end
-    
+
     def to_config(model, index, database_conf, offset)
       # Set up associations and joins
       add_internal_attributes
       link!
-      
+
       attr_sources = attributes.collect { |attrib|
         attrib.to_sphinx_clause
       }.join("\n  ")
-      
+
       db_adapter = case adapter
       when :postgres
         "pgsql"
@@ -69,7 +69,7 @@ module ThinkingSphinx
       else
         raise "Unsupported Database Adapter: Sphinx only supports MySQL and PosgreSQL"
       end
-      
+
       config = <<-SOURCE
 
 source #{self.class.name(model)}_#{index}_core
@@ -92,13 +92,13 @@ sql_query_info   = #{to_sql_query_info(offset)}
 #{ThinkingSphinx::Configuration.instance.hash_to_config(self.source_options)}
 }
       SOURCE
-      
+
       if delta?
         config += <<-SOURCE
 
 source #{self.class.name(model)}_#{index}_delta : #{self.class.name(model)}_#{index}_core
 {
-sql_query_pre    = 
+sql_query_pre    =
 sql_query_pre    = #{utf8? && adapter == :mysql ? "SET NAMES utf8" : ""}
 #{"sql_query_pre    = SET SESSION group_concat_max_len = #{@options[:group_concat_max_len]}" if @options[:group_concat_max_len]}
 sql_query        = #{to_sql(:delta => true, :offset => offset).gsub(/\n/, ' ')}
@@ -106,20 +106,20 @@ sql_query_range  = #{to_sql_query_range :delta => true}
 }
         SOURCE
       end
-      
+
       config
     end
-    
+
     # Link all the fields and associations to their corresponding
     # associations and joins. This _must_ be called before interrogating
     # the index's fields and associations for anything that may reference
     # their SQL structure.
-    # 
+    #
     def link!
       base = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(
         @model, [], nil
       )
-      
+
       @fields.each { |field|
         field.model ||= @model
         field.columns.each { |col|
@@ -127,7 +127,7 @@ sql_query_range  = #{to_sql_query_range :delta => true}
           field.associations[col].each { |assoc| assoc.join_to(base) }
         }
       }
-      
+
       @attributes.each { |attribute|
         attribute.model ||= @model
         attribute.columns.each { |col|
@@ -136,21 +136,21 @@ sql_query_range  = #{to_sql_query_range :delta => true}
         }
       }
     end
-    
+
     # Generates the big SQL statement to get the data back for all the fields
     # and attributes, using all the relevant association joins. If you want
     # the version filtered for delta values, send through :delta => true in the
     # options. Won't do much though if the index isn't set up to support a
     # delta sibling.
-    # 
+    #
     # Examples:
-    # 
+    #
     #   index.to_sql
     #   index.to_sql(:delta => true)
     #
     def to_sql(options={})
       assocs = all_associations
-      
+
       where_clause = ""
       if self.delta?
         where_clause << " AND #{@model.quoted_table_name}.#{quote_column('delta')}" +" = #{options[:delta] ? db_boolean(true) : db_boolean(false)}"
@@ -158,17 +158,17 @@ sql_query_range  = #{to_sql_query_range :delta => true}
       unless @conditions.empty?
         where_clause << " AND " << @conditions.join(" AND ")
       end
-      
+
       internal_groupings = []
       if @model.column_names.include?(@model.inheritance_column)
          internal_groupings << "#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)}"
       end
-      
+
       unique_id_expr = "* #{ThinkingSphinx.indexed_models.size} + #{options[:offset] || 0}"
-      
+
       sql = <<-SQL
 SELECT #{ (
-  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} AS #{quote_column(@model.primary_key)} "] + 
+  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)} #{unique_id_expr} AS #{quote_column(@model.primary_key)} "] +
   @fields.collect { |field| field.to_select_sql } +
   @attributes.collect { |attribute| attribute.to_select_sql }
 ).join(", ") }
@@ -178,49 +178,49 @@ WHERE #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} >= $start
   AND #{@model.quoted_table_name}.#{quote_column(@model.primary_key)} <= $end
   #{ where_clause }
 GROUP BY #{ (
-  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] + 
+  ["#{@model.quoted_table_name}.#{quote_column(@model.primary_key)}"] +
   @fields.collect { |field| field.to_group_sql }.compact +
   @attributes.collect { |attribute| attribute.to_group_sql }.compact +
   @groupings + internal_groupings
 ).join(", ") }
       SQL
-      
+
       if @model.connection.class.name == "ActiveRecord::ConnectionAdapters::MysqlAdapter"
         sql += " ORDER BY NULL"
       end
-      
+
       sql
     end
-    
+
     # Simple helper method for the query info SQL - which is a statement that
     # returns the single row for a corresponding id.
-    # 
+    #
     def to_sql_query_info(offset)
       "SELECT * FROM #{@model.quoted_table_name} WHERE " +
       " #{quote_column(@model.primary_key)} = (($id - #{offset}) / #{ThinkingSphinx.indexed_models.size})"
     end
-    
+
     # Simple helper method for the query range SQL - which is a statement that
     # returns minimum and maximum id values. These can be filtered by delta -
     # so pass in :delta => true to get the delta version of the SQL.
-    # 
+    #
     def to_sql_query_range(options={})
       min_statement = "MIN(#{quote_column(@model.primary_key)})"
       max_statement = "MAX(#{quote_column(@model.primary_key)})"
-      
+
       # Fix to handle Sphinx PostgreSQL bug (it doesn't like NULLs or 0's)
       if adapter == :postgres
         min_statement = "COALESCE(#{min_statement}, 1)"
         max_statement = "COALESCE(#{max_statement}, 1)"
       end
-      
+
       sql = "SELECT #{min_statement}, #{max_statement} " +
             "FROM #{@model.quoted_table_name} "
-      sql << "WHERE #{@model.quoted_table_name}.#{quote_column('delta')} " + 
+      sql << "WHERE #{@model.quoted_table_name}.#{quote_column('delta')} " +
             "= #{options[:delta] ? db_boolean(true) : db_boolean(false)}" if self.delta?
       sql
     end
-    
+
     # Returns the SQL query to run before a full index - ie: nothing unless the
     # index has a delta, and then it's an update statement to set delta values
     # back to 0.
@@ -228,13 +228,13 @@ GROUP BY #{ (
     def to_sql_query_pre
       self.delta? ? "UPDATE #{@model.quoted_table_name} SET #{quote_column('delta')} = #{db_boolean(false)}" : ""
     end
-    
+
     # Flag to indicate whether this index has a corresponding delta index.
     #
     def delta?
       @delta
     end
-    
+
     def adapter
       @adapter ||= case @model.connection.class.name
       when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
@@ -245,19 +245,19 @@ GROUP BY #{ (
         raise "Invalid Database Adapter: Sphinx only supports MySQL and PostgreSQL"
       end
     end
-    
+
     def adapter_object
       @adapter_object ||= ThinkingSphinx::AbstractAdapter.detect(@model)
     end
-    
+
     def prefix_fields
       @fields.select { |field| field.prefixes }
     end
-    
+
     def infix_fields
       @fields.select { |field| field.infixes }
     end
-    
+
     def local_index_options
       @options.keys.inject({}) do |local_options, key|
         if ThinkingSphinx::Configuration::IndexOptions.include?(key.to_s)
@@ -266,7 +266,7 @@ GROUP BY #{ (
         local_options
       end
     end
-    
+
     def index_options
       all_index_options = ThinkingSphinx::Configuration.instance.index_options.clone
       @options.keys.select { |key|
@@ -274,7 +274,7 @@ GROUP BY #{ (
       }.each { |key| all_index_options[key.to_sym] = @options[key] }
       all_index_options
     end
-    
+
     def source_options
       all_source_options = ThinkingSphinx::Configuration.instance.source_options.clone
       @options.keys.select { |key|
@@ -282,30 +282,30 @@ GROUP BY #{ (
       }.each { |key| all_source_options[key.to_sym] = @options[key] }
       all_source_options
     end
-    
+
     private
-    
+
     def utf8?
       self.index_options[:charset_type] == "utf-8"
     end
-    
+
     def quote_column(column)
       @model.connection.quote_column_name(column)
     end
-    
+
     # Does all the magic with the block provided to the base #initialize.
     # Creates a new class subclassed from Builder, and evaluates the block
     # on it, then pulls all relevant settings - fields, attributes, conditions,
     # properties - into the new index.
-    # 
+    #
     # Also creates a CRC attribute for the model.
-    # 
+    #
     def initialize_from_builder(&block)
       builder = Class.new(Builder)
       builder.setup
-      
+
       builder.instance_eval &block
-      
+
       unless @model.descends_from_active_record?
         stored_class = @model.store_full_sti_class ? @model.name : @model.name.demodulize
         builder.where("#{@model.quoted_table_name}.#{quote_column(@model.inheritance_column)} = '#{stored_class}'")
@@ -317,7 +317,7 @@ GROUP BY #{ (
       @groupings  = builder.groupings
       @delta      = builder.properties[:delta]
       @options    = builder.properties.except(:delta)
-      
+
       # We want to make sure that if the database doesn't exist, then Thinking
       # Sphinx doesn't mind when running non-TS tasks (like db:create, db:drop
       # and db:migrate). It's a bit hacky, but I can't think of a better way.
@@ -329,11 +329,11 @@ GROUP BY #{ (
         raise err
       end
     end
-    
+
     # Returns all associations used amongst all the fields and attributes.
     # This includes all associations between the model and what the actual
     # columns are from.
-    # 
+    #
     def all_associations
       @all_associations ||= (
         # field associations
@@ -349,30 +349,30 @@ GROUP BY #{ (
         assoc.ancestors
       }.flatten.uniq
     end
-    
+
     # Gets a stack of associations for a specific path.
-    # 
+    #
     def associations(path, parent = nil)
       assocs = []
-      
+
       if parent.nil?
         assocs = association(path.shift)
       else
         assocs = parent.children(path.shift)
       end
-      
+
       until path.empty?
         point = path.shift
         assocs = assocs.collect { |assoc|
           assoc.children(point)
         }.flatten
       end
-      
+
       assocs
     end
-    
+
     # Gets the association stack for a specific key.
-    # 
+    #
     def association(key)
       @associations[key] ||= Association.children(@model, key)
     end
@@ -387,7 +387,7 @@ GROUP BY #{ (
         val ? '1' : '0'
       end
     end
-    
+
     def crc_column
       if @model.column_names.include?(@model.inheritance_column)
         case adapter
@@ -400,20 +400,20 @@ GROUP BY #{ (
         @model.to_crc32.to_s
       end
     end
-    
+
     def add_internal_attributes
       @attributes << Attribute.new(
         FauxColumn.new(@model.primary_key.to_sym),
         :type => :integer,
         :as   => :sphinx_internal_id
       ) unless @attributes.detect { |attr| attr.alias == :sphinx_internal_id }
-      
+
       @attributes << Attribute.new(
         FauxColumn.new(crc_column),
         :type => :integer,
         :as   => :class_crc
       ) unless @attributes.detect { |attr| attr.alias == :class_crc }
-      
+
       @attributes << Attribute.new(
         FauxColumn.new("'" + (@model.send(:subclasses).collect { |klass|
           klass.to_crc32.to_s
@@ -421,7 +421,7 @@ GROUP BY #{ (
         :type => :multi,
         :as   => :subclass_crcs
       ) unless @attributes.detect { |attr| attr.alias == :subclass_crcs }
-      
+
       @attributes << Attribute.new(
         FauxColumn.new("0"),
         :type => :integer,

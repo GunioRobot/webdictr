@@ -5,9 +5,9 @@ module ThinkingSphinx
         create_array_accum_function
         create_crc32_function
       end
-      
+
       private
-      
+
       def create_array_accum_function
         connection.execute "begin"
         connection.execute "savepoint ts"
@@ -39,7 +39,7 @@ module ThinkingSphinx
         connection.execute "release savepoint ts"
         connection.execute "commit"
       end
-      
+
       def create_crc32_function
         connection.execute "begin"
         connection.execute "savepoint ts"

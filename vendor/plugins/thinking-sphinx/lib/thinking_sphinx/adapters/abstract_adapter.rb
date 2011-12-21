@@ -5,7 +5,7 @@ module ThinkingSphinx
         # Deliberately blank - subclasses should do something though. Well, if
         # they need to.
       end
-      
+
       def detect(model)
         case model.connection.class.name
         when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
@@ -16,9 +16,9 @@ module ThinkingSphinx
           raise "Invalid Database Adapter: Sphinx only supports MySQL and PostgreSQL"
         end
       end
-      
+
       protected
-      
+
       def connection
         @connection ||= ::ActiveRecord::Base.connection
       end

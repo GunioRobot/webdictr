@@ -3,7 +3,7 @@ module ThinkingSphinx
     # This module covers the specific model searches - but the syntax is
     # exactly the same as the core Search class - so use that as your refence
     # point.
-    # 
+    #
     module Search
       def self.included(base)
         base.class_eval do

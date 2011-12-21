@@ -5,7 +5,7 @@ describe WordsController do
   def mock_word(stubs={})
     @mock_word ||= mock_model(Word, stubs)
   end
-  
+
   describe "responding to GET index" do
 
     it "should expose all words as @words" do
@@ -15,7 +15,7 @@ describe WordsController do
     end
 
     describe "with mime type of xml" do
-  
+
       it "should render all words as xml" do
         request.env["HTTP_ACCEPT"] = "application/xml"
         Word.should_receive(:find).with(:all).and_return(words = mock("Array of Words"))
@@ -23,7 +23,7 @@ describe WordsController do
         get :index
         response.body.should == "generated XML"
       end
-    
+
     end
 
   end
@@ -35,7 +35,7 @@ describe WordsController do
       get :show, :id => "37"
       assigns[:word].should equal(mock_word)
     end
-    
+
     describe "with mime type of xml" do
 
       it "should render the requested word as xml" do
@@ -47,11 +47,11 @@ describe WordsController do
       end
 
     end
-    
+
   end
 
   describe "responding to GET new" do
-  
+
     it "should expose a new word as @word" do
       Word.should_receive(:new).and_return(mock_word)
       get :new
@@ -61,7 +61,7 @@ describe WordsController do
   end
 
   describe "responding to GET edit" do
-  
+
     it "should expose the requested word as @word" do
       Word.should_receive(:find).with("37").and_return(mock_word)
       get :edit, :id => "37"
@@ -73,7 +73,7 @@ describe WordsController do
   describe "responding to POST create" do
 
     describe "with valid params" do
-      
+
       it "should expose a newly created word as @word" do
         Word.should_receive(:new).with({'these' => 'params'}).and_return(mock_word(:save => true))
         post :create, :word => {:these => 'params'}
@@ -85,9 +85,9 @@ describe WordsController do
         post :create, :word => {}
         response.should redirect_to(word_url(mock_word))
       end
-      
+
     end
-    
+
     describe "with invalid params" do
 
       it "should expose a newly created but unsaved word as @word" do
@@ -101,9 +101,9 @@ describe WordsController do
         post :create, :word => {}
         response.should render_template('new')
       end
-      
+
     end
-    
+
   end
 
   describe "responding to PUT udpate" do
@@ -129,7 +129,7 @@ describe WordsController do
       end
 
     end
-    
+
     describe "with invalid params" do
 
       it "should update the requested word" do
@@ -161,7 +161,7 @@ describe WordsController do
       mock_word.should_receive(:destroy)
       delete :destroy, :id => "37"
     end
-  
+
     it "should redirect to the words list" do
       Word.stub!(:find).and_return(mock_word(:destroy => true))
       delete :destroy, :id => "1"

@@ -5,7 +5,7 @@ describe ThinkingSphinx::Index::Builder do
     @builder = Class.new(ThinkingSphinx::Index::Builder)
     @builder.setup
   end
-  
+
   describe "setup method" do
     it "should set up the information arrays and properties hash" do
       @builder.fields.should     == []
@@ -15,20 +15,20 @@ describe ThinkingSphinx::Index::Builder do
       @builder.properties.should == {}
     end
   end
-  
+
   describe "indexes method" do
-    
+
   end
-  
+
   describe "has method" do
-    
+
   end
-  
+
   describe "where method" do
-    
+
   end
-  
+
   describe "set_property method" do
-    
+
   end
 end

@@ -44,7 +44,7 @@ module ThinkingSphinx
           #
           #   define_index do
           #     # fields ...
-          #     
+          #
           #     has created_at, updated_at
           #   end
           #
@@ -54,45 +54,45 @@ module ThinkingSphinx
           #   define_index do
           #     # fields ...
           #     # attributes ...
-          #     
+          #
           #     set_property :delta => true
           #   end
           #
           # Check out the more detailed documentation for each of these methods
           # at ThinkingSphinx::Index::Builder.
-          # 
+          #
           def define_index(&block)
             return unless ThinkingSphinx.define_indexes?
-            
+
             self.sphinx_indexes ||= []
             index = Index.new(self, &block)
-            
+
             self.sphinx_indexes << index
             unless ThinkingSphinx.indexed_models.include?(self.name)
               ThinkingSphinx.indexed_models << self.name
             end
-            
+
             if index.delta?
               before_save   :toggle_delta
               after_commit  :index_delta
             end
-            
+
             after_destroy :toggle_deleted
-            
+
             index
           end
           alias_method :sphinx_index, :define_index
-          
+
           def sphinx_index_options
             sphinx_indexes.last.options
           end
-          
+
           # Generate a unique CRC value for the model's name, to use to
           # determine which Sphinx documents belong to which AR records.
-          # 
+          #
           # Really only written for internal use - but hey, if it's useful to
           # you in some other way, awesome.
-          # 
+          #
           def to_crc32
             result = 0xFFFFFFFF
             self.name.each_byte do |byte|
@@ -103,11 +103,11 @@ module ThinkingSphinx
             end
             result ^ 0xFFFFFFFF
           end
-          
+
           def to_crc32s
             (subclasses << self).collect { |klass| klass.to_crc32 }
           end
-          
+
           def source_of_sphinx_index
             possible_models = self.sphinx_indexes.collect { |index| index.model }
             return self if possible_models.include?(self)
@@ -121,10 +121,10 @@ module ThinkingSphinx
           end
         end
       end
-      
+
       base.send(:include, ThinkingSphinx::ActiveRecord::Delta)
       base.send(:include, ThinkingSphinx::ActiveRecord::Search)
-      
+
       ::ActiveRecord::Associations::HasManyAssociation.send(
         :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
       )
@@ -132,26 +132,26 @@ module ThinkingSphinx
         :include, ThinkingSphinx::ActiveRecord::HasManyAssociation
       )
     end
-    
+
     def in_core_index?
       self.class.search_for_id(
         self.sphinx_document_id,
         "#{self.class.source_of_sphinx_index.name.underscore.tr(':/\\', '_')}_core"
       )
     end
-    
+
     def toggle_deleted
       return unless ThinkingSphinx.updates_enabled? && ThinkingSphinx.sphinx_running?
-      
+
       config = ThinkingSphinx::Configuration.instance
       client = Riddle::Client.new config.address, config.port
-      
+
       client.update(
         "#{self.class.sphinx_indexes.first.name}_core",
         ['sphinx_deleted'],
         {self.sphinx_document_id => 1}
       ) if self.in_core_index?
-      
+
       client.update(
         "#{self.class.sphinx_indexes.first.name}_delta",
         ['sphinx_deleted'],
@@ -162,7 +162,7 @@ module ThinkingSphinx
     rescue ::ThinkingSphinx::ConnectionError
       # nothing
     end
-    
+
     def sphinx_document_id
       (self.id * ThinkingSphinx.indexed_models.size) +
         ThinkingSphinx.indexed_models.index(self.class.source_of_sphinx_index.name)

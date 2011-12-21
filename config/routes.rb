@@ -1,8 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :words
   map.resources :dicts
-  
-  
+
+
   map.login 'login', :controller => 'sessions', :action => 'new'
   map.logout 'logout', :controller => 'sessions', :action => 'destroy'
   map.resources :sessions
@@ -25,7 +25,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # Sample resource route with sub-resources:
   #   map.resources :products, :has_many => [ :comments, :sales ], :has_one => :seller
-  
+
   # Sample resource route with more complex sub-resources
   #   map.resources :products do |products|
   #     products.resources :comments

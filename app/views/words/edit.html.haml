@@ -4,7 +4,7 @@
   %p
     = f.label :dict_id, "Dictionary"
     = f.select(:dict_id, Dict.find(:all).collect {|d| [ d.description, d.id ] })
-  %p 
+  %p
     = f.label :keyword
     = f.text_field :keyword
   %p

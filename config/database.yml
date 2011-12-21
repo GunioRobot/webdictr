@@ -9,7 +9,7 @@ development: &defaults
 test:
   <<:       *defaults
   database: webdictr_test
- 
+
 production:
   <<:       *defaults
   database: webdictr_prod

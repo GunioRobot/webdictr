@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "/dicts/index.html.erb" do
   include DictsHelper
-  
+
   before(:each) do
     assigns[:dicts] = [
       stub_model(Dict,

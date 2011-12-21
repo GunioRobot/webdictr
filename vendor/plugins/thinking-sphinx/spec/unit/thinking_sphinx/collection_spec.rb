@@ -5,11 +5,11 @@ describe ThinkingSphinx::Collection do
     @sphinx.setup_sphinx
     @sphinx.start
   end
-  
+
   after :all do
     @sphinx.stop
   end
-  
+
   it "should return items paired to their attribute values" do
     results = Person.search ""
     results.should_not be_empty
@@ -17,7 +17,7 @@ describe ThinkingSphinx::Collection do
       result.id.should == id
     end
   end
-  
+
   it "should return items paired with their weighting" do
     results = Person.search "Ellie Ford", :match_mode => :any
     results.should_not be_empty
@@ -26,7 +26,7 @@ describe ThinkingSphinx::Collection do
       weight.should be_kind_of(Integer)
     end
   end
-  
+
   it "should return items paired with their count if grouping" do
     results = Person.search :group_function => :attr, :group_by => "birthday"
     results.should_not be_empty
@@ -35,7 +35,7 @@ describe ThinkingSphinx::Collection do
       count.should  be_kind_of(Integer)
     end
   end
-  
+
   it "should return items paired with their count and group value" do
     results = Person.search :group_function => :attr, :group_by => "birthday"
     results.should_not be_empty
@@ -46,7 +46,7 @@ describe ThinkingSphinx::Collection do
       count.should  be_kind_of(Integer)
     end
   end
-  
+
   it "should return ids" do
     results = Person.search_for_ids "Ellie"
     results.should_not be_empty
@@ -54,7 +54,7 @@ describe ThinkingSphinx::Collection do
       result.should be_kind_of(Integer)
     end
   end
-  
+
   it "should return ids paired with weighting" do
     results = Person.search_for_ids "Ellie Ford", :match_mode => :any
     results.should_not be_empty
@@ -63,7 +63,7 @@ describe ThinkingSphinx::Collection do
       weight.should be_kind_of(Integer)
     end
   end
-  
+
   it "should sort the objects the same as the result set" do
     Person.search_for_ids("Ellie", :order => "sphinx_internal_id DESC").should ==
     Person.search("Ellie", :order => "sphinx_internal_id DESC").collect(&:id)

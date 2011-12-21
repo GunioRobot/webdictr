@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "/words/show.html.erb" do
   include WordsHelper
-  
+
   before(:each) do
     assigns[:word] = @word = stub_model(Word,
       :keyword => "value for keyword",
